@@ -14,4 +14,3 @@ Information of the cities is stored using localStorage and users can click on sa
 2. CSS
 3. AJAX
 4. JavaScript
-5. Bootstrap
