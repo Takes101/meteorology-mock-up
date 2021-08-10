@@ -76,7 +76,7 @@ function currentWeather(city){
 
 function UVIndex(ln,lt){
   //lets build the url for uvindex.
-  var uvqURL="https://api.openweathermap.org/data/2.5/uvi?appid="+ APIKey+"&lat="+lt+"&lon="+ln;
+  var uvqURL="https://api.openweathermap.org/data/2.5/uvi?appid="+ apiKey+"&lat="+lt+"&lon="+ln;
   $.ajax({
           url:uvqURL,
           method:"GET"
@@ -94,6 +94,47 @@ function loadlastCity(){
           addToList(sCity[i]);
       }
       city=sCity[i-1];
+      currentWeather(city);
+  }
+
+}
+
+function forecast(cityid){
+  var dayover= false;
+  var queryforcastURL="https://api.openweathermap.org/data/2.5/forecast?id="+cityid+"&appid="+apiKey;
+  $.ajax({
+      url:queryforcastURL,
+      method:"GET"
+  }).then(function(response){
+      
+      for (i=0;i<5;i++){
+          var date= new Date((response.list[((i+1)*8)-1].dt)*1000).toLocaleDateString();
+          var iconcode= response.list[((i+1)*8)-1].weather[0].icon;
+          var iconurl="https://openweathermap.org/img/wn/"+iconcode+".png";
+          var tempK= response.list[((i+1)*8)-1].main.temp;
+          var tempF=(((tempK-273.5)*1.80)+32).toFixed(2);
+          var humidity= response.list[((i+1)*8)-1].main.humidity;
+      
+          $("#fDate"+i).html(date);
+          $("#fImg"+i).html("<img src="+iconurl+">");
+          $("#fTemp"+i).html(tempF+"&#8457");
+          $("#fHumidity"+i).html(humidity+"%");
+      }
+      
+  });
+}
+
+function addToList(c){
+  var listEl= $("<li>"+c.toUpperCase()+"</li>");
+  $(listEl).attr("class","list-group-item");
+  $(listEl).attr("data-value",c.toUpperCase());
+  $(".list-group").append(listEl);
+}
+// display the past search again when the list group item is clicked in search history
+function invokePastSearch(event){
+  var liEl=event.target;
+  if (event.target.matches("li")){
+      city=liEl.textContent.trim();
       currentWeather(city);
   }
 
